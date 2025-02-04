@@ -17,7 +17,8 @@ local Window = Fluent:CreateWindow({
 })
 
 local Tabs = {
-    AutoEgg = Window:AddTab({ Title = "AutoEgg", Icon = "scroll" })
+    AutoEgg = Window:AddTab({ Title = "AutoEgg", Icon = "scroll" }),
+    Credits = Window:AddTab({ Title = "Créditos", Icon = "heart" })
 }
 
 -- Variável de controle para AutoEgg
@@ -47,22 +48,11 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
-                    -- Pular todas as animações do personagem
-                    local character = game.Players.LocalPlayer.Character
-                    if character and character:FindFirstChild("Humanoid") then
-                        local humanoid = character.Humanoid
-                        -- Desabilita as animações do humanoide
-                        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-                        humanoid.AutoRotate = false
-                        humanoid.PlatformStand = true
-
-                        -- Se você quiser, pode redefinir o estado do personagem para um "parado"
-                        humanoid:Move(Vector3.new(0, 0, 0)) -- Mover o personagem para um local fixo (ignorar movimento)
-
-                        -- Desabilitar o Animator para pular animações
-                        local animator = character:FindFirstChildOfClass("Animator")
-                        if animator then
-                            animator:Stop()
+                    -- Tentar pular a animação de abertura do Egg
+                    local eggOpening = workspace:FindFirstChild("EggOpening")
+                    if eggOpening then
+                        if eggOpening:FindFirstChild("Tween") then
+                            eggOpening.Tween:Cancel()
                         end
                     end
                 end
@@ -71,3 +61,14 @@ eggToggle:OnChanged(function(state)
         end)
     end
 end)
+
+-- Aba de Créditos
+Tabs.Credits:AddParagraph({
+    Title = "Feito por:",
+    Content = "GodHub"
+})
+
+Tabs.Credits:AddParagraph({
+    Title = "Parceiros:",
+    Content = "Mender Hub"
+})
