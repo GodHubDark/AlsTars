@@ -24,7 +24,7 @@ local Tabs = {
 -- Variável de controle para AutoEgg
 local autoEggEnabled = false
 
--- Toggle para AutoEgg (0.01s de espera)
+-- Toggle para AutoEgg (0.001s de espera)
 local eggToggle = Tabs.AutoEgg:AddToggle("EggToggle", {
     Title = "Namek Island Egg",
     Default = false
@@ -51,12 +51,33 @@ eggToggle:OnChanged(function(state)
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
                     if eggOpening then
-                        if eggOpening:FindFirstChild("Tween") then
-                            eggOpening.Tween:Cancel()
+                        -- Cancelar animações de Tween ou quaisquer outros Animadores
+                        local tween = eggOpening:FindFirstChild("Tween")
+                        if tween then
+                            tween:Cancel()
+                        end
+                        
+                        local animator = eggOpening:FindFirstChildOfClass("Animator")
+                        if animator then
+                            animator:Stop()
+                        end
+
+                        -- Aquele caso onde o Strike também pode ser uma animação
+                        local strikeAnimation = eggOpening:FindFirstChild("Strike")
+                        if strikeAnimation then
+                            -- Cancela qualquer animação de Strike se estiver presente
+                            local strikeTween = strikeAnimation:FindFirstChildOfClass("Tween")
+                            if strikeTween then
+                                strikeTween:Cancel()
+                            end
+                            local strikeAnimator = strikeAnimation:FindFirstChildOfClass("Animator")
+                            if strikeAnimator then
+                                strikeAnimator:Stop()
+                            end
                         end
                     end
                 end
-                task.wait(0.01) -- Espera 0.01s antes de repetir
+                task.wait(0.001) -- Espera 0.001s antes de repetir para maior velocidade
             end
         end)
     end
