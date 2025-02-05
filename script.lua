@@ -4,8 +4,6 @@ local PlaceId = game.PlaceId
 local ProductInfo = MarketplaceService:GetProductInfo(PlaceId)
 local GameName = ProductInfo.Name
 
-Fluent:Notify({ Title = "Script executado com sucesso", Content = "Você está usando GodHub" })
-
 local Window = Fluent:CreateWindow({
     Title = "GodHub",
     SubTitle = "-- " .. GameName,
@@ -13,7 +11,7 @@ local Window = Fluent:CreateWindow({
     Size = UDim2.fromOffset(450, 320),
     Acrylic = false,
     Theme = "aqua", -- Tema Aqua aplicado
-    MinimizeKey = Enum.KeyCode.LeftControl
+    MinimizeKey = Enum.KeyCode.LeftControl -- Atalho para abrir/fechar
 })
 
 local Tabs = {
@@ -24,7 +22,7 @@ local Tabs = {
 -- Variável de controle para AutoEgg
 local autoEggEnabled = false
 
--- Toggle para AutoEgg (0.1s de espera)
+-- Toggle para AutoEgg (0.01s de espera)
 local eggToggle = Tabs.AutoEgg:AddToggle("EggToggle", {
     Title = "Namek Island Egg",
     Default = false
@@ -48,8 +46,8 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
-                    -- Espera ajustada para 0.1s ao tentar pular a animação do Egg
-                    task.wait(0.1)
+                    -- Espera ajustada para 0.01s ao tentar pular a animação do Egg
+                    task.wait(0.01)
 
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
@@ -70,7 +68,7 @@ eggToggle:OnChanged(function(state)
                         end
                     end
                 end
-                task.wait(0.1)
+                task.wait(0.01) -- Espera agora é 0.01s antes de repetir
             end
         end)
     end
@@ -79,81 +77,3 @@ end)
 -- Aba de Créditos
 Tabs.Credits:AddParagraph({ Title = "Feito por:", Content = "GodHub" })
 Tabs.Credits:AddParagraph({ Title = "Parceiros:", Content = "Mender Hub" })
-
--- Botão Flutuante para Abrir/Fechar o Menu
-local ScreenGui = Instance.new("ScreenGui")
-local ImageButton = Instance.new("ImageButton")
-local UICorner = Instance.new("UICorner")
-
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.005, 0, 0.010, 0)
-ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://118885851320276" -- Ícone personalizado
-
-UICorner.Parent = ImageButton
-
--- Variável de controle para a visibilidade do hub
-local isWindowOpen = true
-
--- Função para alternar a visibilidade do hub
-local function toggleWindow()
-    isWindowOpen = not isWindowOpen
-    Window.Visible = isWindowOpen
-    if isWindowOpen then
-        Fluent:Notify({ Title = "GodHub", Content = "Hub aberto" })
-    else
-        Fluent:Notify({ Title = "GodHub", Content = "Hub fechado" })
-    end
-end
-
--- Função de arrastar o botão flutuante
-local UIS = game:GetService("UserInputService")
-local dragging, dragInput, startPos, startMousePos
-local hasMoved = false
-
-ImageButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        hasMoved = false
-        startPos = ImageButton.Position
-        startMousePos = UIS:GetMouseLocation()
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-ImageButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = UIS:GetMouseLocation() - startMousePos
-        if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then 
-            hasMoved = true
-        end
-        ImageButton.Position = UDim2.new(
-            startPos.X.Scale, startPos.X.Offset + delta.X,
-            startPos.Y.Scale, startPos.Y.Offset + delta.Y
-        )
-    end
-end)
-
--- Alternar entre abrir e fechar o Hub ao clicar no botão
-ImageButton.MouseButton1Click:Connect(function()
-    if not hasMoved then
-        toggleWindow()
-    end
-end)
