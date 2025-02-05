@@ -51,28 +51,20 @@ eggToggle:OnChanged(function(state)
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
                     if eggOpening then
-                        -- Cancelar animações de Tween ou quaisquer outros Animadores
-                        local tween = eggOpening:FindFirstChild("Tween")
-                        if tween then
-                            tween:Cancel()
-                        end
-                        
+                        -- Interromper qualquer Animator
                         local animator = eggOpening:FindFirstChildOfClass("Animator")
                         if animator then
                             animator:Stop()
                         end
 
-                        -- Aquele caso onde o Strike também pode ser uma animação
-                        local strikeAnimation = eggOpening:FindFirstChild("Strike")
-                        if strikeAnimation then
-                            -- Cancela qualquer animação de Strike se estiver presente
-                            local strikeTween = strikeAnimation:FindFirstChildOfClass("Tween")
-                            if strikeTween then
-                                strikeTween:Cancel()
-                            end
-                            local strikeAnimator = strikeAnimation:FindFirstChildOfClass("Animator")
-                            if strikeAnimator then
-                                strikeAnimator:Stop()
+                        -- Pular animações do tipo "Animation"
+                        if eggOpening:FindFirstChild("Animation") then
+                            local animation = eggOpening.Animation
+                            if animation:IsA("Animation") then
+                                local animationTrack = animation:FindFirstChildOfClass("AnimationTrack")
+                                if animationTrack then
+                                    animationTrack:Stop()
+                                end
                             end
                         end
                     end
@@ -157,3 +149,6 @@ ImageButton.MouseButton1Down:Connect(function()
         game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.LeftControl, false, game)
     end
 end)
+
+-- Carregando o script adicional com loadstring
+loadstring(game:HttpGet("https://raw.githubusercontent.com/GodHubDark/AlsTars/refs/heads/main/script.lua"))()
