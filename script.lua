@@ -12,7 +12,7 @@ local Window = Fluent:CreateWindow({
     TabWidth = 102,
     Size = UDim2.fromOffset(450, 320),
     Acrylic = false,
-    Theme = "dark",
+    Theme = "Aqua",  -- Tema alterado para Aqua
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
@@ -24,7 +24,7 @@ local Tabs = {
 -- Variável de controle para AutoEgg
 local autoEggEnabled = false
 
--- Toggle para AutoEgg (0.1s de espera)
+-- Toggle para AutoEgg (0.01s de espera)
 local eggToggle = Tabs.AutoEgg:AddToggle("EggToggle", {
     Title = "Namek Island Egg",
     Default = false
@@ -48,8 +48,8 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
-                    -- Espera ajustada para 0.1s ao tentar pular a animação do Egg
-                    task.wait(0.1)  -- Ajuste para 0.1s de espera
+                    -- Espera ajustada para 0.01s ao tentar pular a animação do Egg
+                    task.wait(0.01)  -- Ajuste para 0.01s de espera
 
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
@@ -72,7 +72,7 @@ eggToggle:OnChanged(function(state)
                         end
                     end
                 end
-                task.wait(0.1) -- Espera 0.1s antes de repetir
+                task.wait(0.01) -- Espera 0.01s antes de repetir
             end
         end)
     end
