@@ -107,7 +107,22 @@ ImageButton.Image = "rbxassetid://118885851320276" -- ID do ícone
 
 UICorner.Parent = ImageButton
 
--- Função para tornar o botão arrastável
+-- Variável de controle para a visibilidade do hub
+local isWindowOpen = true
+
+-- Função para alternar a visibilidade do hub
+local function toggleWindow()
+    isWindowOpen = not isWindowOpen
+    Window.Visible = isWindowOpen
+    -- Notificação para informar se o Hub está aberto ou fechado
+    if isWindowOpen then
+        Fluent:Notify({ Title = "GodHub", Content = "Hub aberto" })
+    else
+        Fluent:Notify({ Title = "GodHub", Content = "Hub fechado" })
+    end
+end
+
+-- Função de arrastar o botão flutuante
 local UIS = game:GetService("UserInputService")
 local dragging, dragInput, startPos, startMousePos
 local hasMoved = false
@@ -146,21 +161,10 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
--- Variável de controle para a visibilidade do hub
-local isWindowOpen = true
-
+-- Alternar entre abrir e fechar o Hub ao clicar no botão
 ImageButton.MouseButton1Down:Connect(function()
     task.wait(0.1) -- Espera para evitar abrir ao arrastar
     if not hasMoved then
-        -- Alternar o estado de visibilidade da janela
-        isWindowOpen = not isWindowOpen
-        Window.Visible = isWindowOpen
-        
-        -- Enviar o evento para alternar a visibilidade
-        if isWindowOpen then
-            Fluent:Notify({ Title = "GodHub", Content = "Hub aberto" })
-        else
-            Fluent:Notify({ Title = "GodHub", Content = "Hub fechado" })
-        end
+        toggleWindow() -- Alterna a visibilidade do hub
     end
 end)
