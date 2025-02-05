@@ -48,31 +48,26 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
+                    -- Espera ajustada para 0.1s ao tentar pular a animação do Egg
+                    task.wait(0.1)  -- Ajuste para 0.1s de espera
+
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
                     if eggOpening then
-                        -- Cancelar animações de Tween ou quaisquer outros Animadores
-                        local tween = eggOpening:FindFirstChild("Tween")
-                        if tween then
-                            tween:Cancel()
-                        end
-                        
+                        -- Interromper qualquer Animator
                         local animator = eggOpening:FindFirstChildOfClass("Animator")
                         if animator then
                             animator:Stop()
                         end
 
-                        -- Aquele caso onde o Strike também pode ser uma animação
-                        local strikeAnimation = eggOpening:FindFirstChild("Strike")
-                        if strikeAnimation then
-                            -- Cancela qualquer animação de Strike se estiver presente
-                            local strikeTween = strikeAnimation:FindFirstChildOfClass("Tween")
-                            if strikeTween then
-                                strikeTween:Cancel()
-                            end
-                            local strikeAnimator = strikeAnimation:FindFirstChildOfClass("Animator")
-                            if strikeAnimator then
-                                strikeAnimator:Stop()
+                        -- Pular animações do tipo "Animation"
+                        if eggOpening:FindFirstChild("Animation") then
+                            local animation = eggOpening.Animation
+                            if animation:IsA("Animation") then
+                                local animationTrack = animation:FindFirstChildOfClass("AnimationTrack")
+                                if animationTrack then
+                                    animationTrack:Stop()
+                                end
                             end
                         end
                     end
@@ -114,4 +109,58 @@ UICorner.Parent = ImageButton
 
 -- Função para tornar o botão arrastável
 local UIS = game:GetService("UserInputService")
-local dragging, dragInput, startPos, startMouse
+local dragging, dragInput, startPos, startMousePos
+local hasMoved = false
+
+ImageButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        hasMoved = false
+        startPos = ImageButton.Position
+        startMousePos = UIS:GetMouseLocation()
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ImageButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = UIS:GetMouseLocation() - startMousePos
+        if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then 
+            hasMoved = true
+        end
+        ImageButton.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Variável de controle para a visibilidade do hub
+local isWindowOpen = true
+
+ImageButton.MouseButton1Down:Connect(function()
+    task.wait(0.1) -- Espera para evitar abrir ao arrastar
+    if not hasMoved then
+        -- Alternar o estado de visibilidade da janela
+        isWindowOpen = not isWindowOpen
+        Window.Visible = isWindowOpen
+        
+        -- Enviar o evento para alternar a visibilidade
+        if isWindowOpen then
+            Fluent:Notify({ Title = "GodHub", Content = "Hub aberto" })
+        else
+            Fluent:Notify({ Title = "GodHub", Content = "Hub fechado" })
+        end
+    end
+end)
