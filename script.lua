@@ -12,7 +12,7 @@ local Window = Fluent:CreateWindow({
     TabWidth = 102,
     Size = UDim2.fromOffset(450, 320),
     Acrylic = false,
-    Theme = "Aqua",  -- Tema alterado para Aqua
+    Theme = "aqua", -- Tema Aqua aplicado
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
@@ -24,7 +24,7 @@ local Tabs = {
 -- Variável de controle para AutoEgg
 local autoEggEnabled = false
 
--- Toggle para AutoEgg (0.01s de espera)
+-- Toggle para AutoEgg (0.1s de espera)
 local eggToggle = Tabs.AutoEgg:AddToggle("EggToggle", {
     Title = "Namek Island Egg",
     Default = false
@@ -48,19 +48,17 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
-                    -- Espera ajustada para 0.01s ao tentar pular a animação do Egg
-                    task.wait(0.01)  -- Ajuste para 0.01s de espera
+                    -- Espera ajustada para 0.1s ao tentar pular a animação do Egg
+                    task.wait(0.1)
 
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
                     if eggOpening then
-                        -- Interromper qualquer Animator
                         local animator = eggOpening:FindFirstChildOfClass("Animator")
                         if animator then
                             animator:Stop()
                         end
 
-                        -- Pular animações do tipo "Animation"
                         if eggOpening:FindFirstChild("Animation") then
                             local animation = eggOpening.Animation
                             if animation:IsA("Animation") then
@@ -72,22 +70,15 @@ eggToggle:OnChanged(function(state)
                         end
                     end
                 end
-                task.wait(0.01) -- Espera 0.01s antes de repetir
+                task.wait(0.1)
             end
         end)
     end
 end)
 
 -- Aba de Créditos
-Tabs.Credits:AddParagraph({
-    Title = "Feito por:",
-    Content = "GodHub"
-})
-
-Tabs.Credits:AddParagraph({
-    Title = "Parceiros:",
-    Content = "Mender Hub"
-})
+Tabs.Credits:AddParagraph({ Title = "Feito por:", Content = "GodHub" })
+Tabs.Credits:AddParagraph({ Title = "Parceiros:", Content = "Mender Hub" })
 
 -- Botão Flutuante para Abrir/Fechar o Menu
 local ScreenGui = Instance.new("ScreenGui")
@@ -103,7 +94,7 @@ ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BorderSizePixel = 0
 ImageButton.Position = UDim2.new(0.005, 0, 0.010, 0)
 ImageButton.Size = UDim2.new(0, 45, 0, 45)
-ImageButton.Image = "rbxassetid://118885851320276" -- ID do ícone
+ImageButton.Image = "rbxassetid://118885851320276" -- Ícone personalizado
 
 UICorner.Parent = ImageButton
 
@@ -114,7 +105,6 @@ local isWindowOpen = true
 local function toggleWindow()
     isWindowOpen = not isWindowOpen
     Window.Visible = isWindowOpen
-    -- Notificação para informar se o Hub está aberto ou fechado
     if isWindowOpen then
         Fluent:Notify({ Title = "GodHub", Content = "Hub aberto" })
     else
@@ -162,9 +152,8 @@ UIS.InputChanged:Connect(function(input)
 end)
 
 -- Alternar entre abrir e fechar o Hub ao clicar no botão
-ImageButton.MouseButton1Down:Connect(function()
-    task.wait(0.1) -- Espera para evitar abrir ao arrastar
+ImageButton.MouseButton1Click:Connect(function()
     if not hasMoved then
-        toggleWindow() -- Alterna a visibilidade do hub
+        toggleWindow()
     end
 end)
