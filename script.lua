@@ -10,8 +10,8 @@ local Window = Fluent:CreateWindow({
     TabWidth = 102,
     Size = UDim2.fromOffset(450, 320),
     Acrylic = false,
-    Theme = "aqua", -- Tema Aqua aplicado
-    MinimizeKey = Enum.KeyCode.LeftControl -- Atalho para abrir/fechar
+    Theme = "Aqua",
+    MinimizeKey = Enum.KeyCode.LeftControl
 })
 
 local Tabs = {
@@ -22,7 +22,7 @@ local Tabs = {
 -- Variável de controle para AutoEgg
 local autoEggEnabled = false
 
--- Toggle para AutoEgg (0.01s de espera)
+-- Toggle para AutoEgg (0.1s de espera)
 local eggToggle = Tabs.AutoEgg:AddToggle("EggToggle", {
     Title = "Namek Island Egg",
     Default = false
@@ -46,17 +46,19 @@ eggToggle:OnChanged(function(state)
                     }
                     game:GetService("ReplicatedStorage").Bridge:FireServer(unpack(args))
 
-                    -- Espera ajustada para 0.01s ao tentar pular a animação do Egg
-                    task.wait(0.01)
+                    -- Espera ajustada para 0.1s ao tentar pular a animação do Egg
+                    task.wait(0.1)
 
                     -- Tentar pular a animação de abertura do Egg
                     local eggOpening = workspace:FindFirstChild("EggOpening")
                     if eggOpening then
+                        -- Interromper qualquer Animator
                         local animator = eggOpening:FindFirstChildOfClass("Animator")
                         if animator then
                             animator:Stop()
                         end
 
+                        -- Pular animações do tipo "Animation"
                         if eggOpening:FindFirstChild("Animation") then
                             local animation = eggOpening.Animation
                             if animation:IsA("Animation") then
@@ -68,12 +70,21 @@ eggToggle:OnChanged(function(state)
                         end
                     end
                 end
-                task.wait(0.01) -- Espera agora é 0.01s antes de repetir
+                task.wait(0.1) -- Espera 0.1s antes de repetir
             end
         end)
     end
 end)
 
 -- Aba de Créditos
-Tabs.Credits:AddParagraph({ Title = "Feito por:", Content = "GodHub" })
-Tabs.Credits:AddParagraph({ Title = "Parceiros:", Content = "Mender Hub" })
+Tabs.Credits:AddParagraph({
+    Title = "Feito por:",
+    Content = "GodHub"
+})
+
+Tabs.Credits:AddParagraph({
+    Title = "Parceiros:",
+    Content = "Mender Hub"
+})
+
+Window:SelectTab(1)
